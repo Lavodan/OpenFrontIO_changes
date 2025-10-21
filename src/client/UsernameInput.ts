@@ -6,7 +6,6 @@ import {
   MAX_USERNAME_LENGTH,
   validateUsername,
 } from "../core/validations/username";
-import { getRandomUsername } from "../core/utilities/UsernameGenerator";
 
 const usernameKey: string = "username";
 
@@ -82,7 +81,7 @@ export class UsernameInput extends LitElement {
   }
 
   private generateNewUsername(): string {
-    const newUsername = getRandomUsername(Math.random())
+    const newUsername = getRandomUsername(Math.random());
     this.storeUsername(newUsername);
     return newUsername;
   }
