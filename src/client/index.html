@@ -89,6 +89,9 @@
     <!-- Immediate execution to prevent FOUC -->
     <script>
       document.documentElement.className = "preload";
+	document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+	}); //temporarily putting it directly in the html
     </script>
 
     <!-- Publift/Fuse ads -->
@@ -449,6 +452,7 @@
       defer
       src="https://static.cloudflareinsights.com/beacon.min.js"
       data-cf-beacon='{"token": "03d93e6fefb349c28ee69b408fa25a13"}'
-    ></script>
+    >
+	</script>
   </body>
 </html>
