@@ -42,6 +42,7 @@ import {
 import "./components/baseComponents/Button";
 import "./components/baseComponents/Modal";
 import { getUserMe, isLoggedIn } from "./jwt";
+import { historyManager, HistoryState } from "./History";
 import "./styles.css";
 
 declare global {
@@ -107,7 +108,7 @@ class Client {
 
   constructor() {}
 
-  initialize(): void {
+  initialize(): void {	  
     const gameVersion = document.getElementById(
       "game-version",
     ) as HTMLDivElement;
@@ -372,7 +373,7 @@ class Client {
   private handleHash() {
     const strip = () =>
       history.replaceState(
-        null,
+        history.state,
         "",
         window.location.pathname + window.location.search,
       );
@@ -381,12 +382,31 @@ class Client {
       alert(message);
       strip();
     };
-
-    const hash = window.location.hash;
-
-    // Decode the hash first to handle encoded characters
-    const decodedHash = decodeURIComponent(hash);
-    const params = new URLSearchParams(decodedHash.split("?")[1] || "");
+	
+	console.debug("Handling hash...")
+	let decodedHash = "";
+	if (history.state !== null) {
+		if (history.state.index === -2) { // We are just navigating through, skip evaluation
+			console.debug("Skipping handling.")
+			return;
+		} else { // Known page
+			historyManager.goto(history.state.index);
+			decodedHash = history.state.hash;
+		}
+	} else { // New page
+		const hash = window.location.hash	
+	
+		// Decode the hash first to handle encoded characters
+		decodedHash = decodeURIComponent(hash);
+	}
+	const params = new URLSearchParams(decodedHash.split("?")[1] || "");
+	
+	historyManager.push({ hash: decodedHash, index: -1 });
+	
+	if (decodedHash === "" || decodedHash === "#") {
+      historyManager.replace({ hash: "#refresh", index: historyManager.current!.index, view: "" });
+    }
+	
 
     // Handle different hash sections
     if (decodedHash.startsWith("#purchase-completed")) {
@@ -546,11 +566,7 @@ class Client {
           (ad as HTMLElement).style.display = "none";
         });
 
-        // Ensure there's a homepage entry in history before adding the lobby entry
-        if (window.location.hash === "" || window.location.hash === "#") {
-          history.replaceState(null, "", window.location.origin + "#refresh");
-        }
-        history.pushState(null, "", `#join=${lobby.gameID}`);
+        historyManager.push({ hash: `#join=${lobby.gameID}`, index: -1 });
       },
     );
   }
