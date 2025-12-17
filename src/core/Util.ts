@@ -12,7 +12,10 @@ import {
   Winner,
 } from "./Schemas";
 
-import { getRandomUsername } from "./utilities/UsernameGenerator";
+import {
+  BOT_NAME_PREFIXES,
+  BOT_NAME_SUFFIXES,
+} from "./execution/utils/BotNames";
 
 export function manhattanDistWrapped(
   c1: Cell,
@@ -289,10 +292,16 @@ export function createRandomName(
   name: string,
   playerType: string,
 ): string | null {
+  let randomName: string | null = null;
   if (playerType === "HUMAN") {
-    return getRandomUsername(simpleHash(name));
+    const hash = simpleHash(name);
+    const prefixIndex = hash % BOT_NAME_PREFIXES.length;
+    const suffixIndex =
+      Math.floor(hash / BOT_NAME_PREFIXES.length) % BOT_NAME_SUFFIXES.length;
+
+    randomName = `👤 ${BOT_NAME_PREFIXES[prefixIndex]} ${BOT_NAME_SUFFIXES[suffixIndex]}`;
   }
-  return null;
+  return randomName;
 }
 
 export const emojiTable = [
