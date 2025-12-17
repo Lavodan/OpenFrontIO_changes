@@ -12,7 +12,6 @@ import {
 import { translateText } from "../../client/Utils";
 import { UsernameSchema } from "../Schemas";
 import { getClanTagOriginalCase, simpleHash } from "../Util";
-import { simpleHash } from "../Util";
 import { getRandomUsername } from "../utilities/UsernameGenerator";
 
 const customDataset = new DataSet()
